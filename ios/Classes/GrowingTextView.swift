@@ -99,8 +99,7 @@ open class GrowingTextView: UITextView {
         oldText = text
         oldSize = bounds.size
         
-        let size = sizeThatFits(CGSize(width: bounds.size.width, height: CGFloat.greatestFiniteMagnitude))
-        var height = size.height
+        var height = contentSize.height
         
         // Constrain minimum height
         height = minHeight > 0 ? max(height, minHeight) : height
