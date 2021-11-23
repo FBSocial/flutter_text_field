@@ -218,6 +218,9 @@ class RichTextField extends StatefulWidget {
 class _RichTextFieldState extends State<RichTextField> {
   double _height = 40;
 
+  bool _backFoucus;
+  int _time = DateTime.now().millisecondsSinceEpoch;
+
   Map createParams() {
     return {
       'width': widget.width ?? MediaQuery.of(context).size.width,
@@ -250,7 +253,7 @@ class _RichTextFieldState extends State<RichTextField> {
         break;
       case 'updateFocus':
         final focus = call.arguments ?? false;
-        print('////// focus: $focus');
+        _backFoucus = focus;
         if (focus) {
           widget.focusNode.requestFocus();
         } else {
@@ -286,6 +289,22 @@ class _RichTextFieldState extends State<RichTextField> {
     super.dispose();
   }
 
+  void onFocusChange(bool focus) {
+    // 从原生回调的foucs，不再传回原生
+    if (_backFoucus == focus) {
+      _backFoucus = null;
+      return;
+    }
+    // 防抖处理
+    final time = DateTime.now().millisecondsSinceEpoch;
+    if (time > _time + 200) {
+      _time = time;
+      widget.controller.updateFocus(focus);
+    }
+    // 清理
+    if (_backFoucus != null) _backFoucus = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final gestureRecognizers = widget.needEagerGesture
@@ -300,9 +319,7 @@ class _RichTextFieldState extends State<RichTextField> {
         height: _height,
         child: Focus(
           focusNode: widget.focusNode,
-          onFocusChange: (focus) {
-            widget.controller.updateFocus(focus);
-          },
+          onFocusChange: onFocusChange,
           child: UiKitView(
             viewType: "com.fanbook.rich_textfield",
             creationParams: createParams(),
@@ -320,9 +337,7 @@ class _RichTextFieldState extends State<RichTextField> {
         height: _height,
         child: Focus(
           focusNode: widget.focusNode,
-          onFocusChange: (focus) {
-            widget.controller.updateFocus(focus);
-          },
+          onFocusChange: onFocusChange,
           child: PlatformViewLink(
             viewType: "com.fanbook.rich_textfield",
             surfaceFactory: (context, controller) {
