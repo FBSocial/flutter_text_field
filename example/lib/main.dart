@@ -75,7 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: RichTextField(
                 controller: _controller,
                 focusNode: _focusNode,
-                text: '1233',
+                text:
+                    'dfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdf',
 //              autoFocus: true,
                 textStyle: Theme.of(context)
                     .textTheme
@@ -87,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     .bodyText1
                     .copyWith(color: Colors.redAccent, fontSize: 18),
                 maxLength: 5000,
-                height: 32,
+                height: 280,
                 minHeight: 32,
                 maxHeight: 280,
                 onChanged: (str) {

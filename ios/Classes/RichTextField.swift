@@ -66,6 +66,7 @@ class RichTextField: NSObject, FlutterPlatformView {
         textView.contentInset = UIEdgeInsets(top: 4, left: 5, bottom: 2, right: 0)
         textView.delegate = self
         textView.backgroundColor = UIColor.clear
+        
         textView.maxHeight = maxHeight
         textView.minHeight = minHeight
         textView.attributedPlaceholder = NSAttributedString(string: placeHolder, attributes: textStyle2Attribute(textStyle: placeHolderStyle, defaultAttr: defaultAttributes))
@@ -138,6 +139,11 @@ class RichTextField: NSObject, FlutterPlatformView {
 extension RichTextField: GrowingTextViewDelegate {
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         updateFocus(focus: true)
+        /// 不加延时的话，textView.selectedRange始终是指向最后的位置
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(200)) {
+            let ret = textView.caretRect(for: textView.position(from: textView.beginningOfDocument, offset: textView.selectedRange.location)!)
+            self.updateCursor(poisition: ret.origin.y)
+        }
         return true
     }
 
@@ -146,6 +152,10 @@ extension RichTextField: GrowingTextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
+        let ret = textView.caretRect(for: textView.position(from: textView.beginningOfDocument, offset: textView.selectedRange.location)!)
+        updateCursor(poisition: ret.origin.y)
+        
         if text == "\n" && textView.returnKeyType == .done {
             submitText()
             return false

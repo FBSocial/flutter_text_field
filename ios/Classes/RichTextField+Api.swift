@@ -55,6 +55,10 @@ extension RichTextField {
         frame.size.width = CGFloat(width)
         textView.frame = frame
     }
+    
+    func updateCursor(poisition: CGFloat) {
+        channel.invokeMethod("updateCursor", arguments: Double(poisition))
+    }
 
     /// flutter controller value 回调
     func updateValue() {

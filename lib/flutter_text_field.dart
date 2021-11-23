@@ -189,6 +189,7 @@ class RichTextField extends StatefulWidget {
   final VoidCallback onEditingComplete;
   final Function(String) onSubmitted;
   final Function(String) onChanged;
+  final Function(double) cursorPositionChanged;
   final bool autoFocus;
   final bool needEagerGesture;
 
@@ -206,6 +207,7 @@ class RichTextField extends StatefulWidget {
     this.minHeight = 32,
     this.onEditingComplete,
     this.onSubmitted,
+    this.cursorPositionChanged,
     this.onChanged,
     this.autoFocus = false,
     this.needEagerGesture = true,
@@ -217,7 +219,6 @@ class RichTextField extends StatefulWidget {
 
 class _RichTextFieldState extends State<RichTextField> {
   double _height = 40;
-
   bool _backFoucus;
   int _time = DateTime.now().millisecondsSinceEpoch;
 
@@ -271,6 +272,10 @@ class _RichTextFieldState extends State<RichTextField> {
         widget.onSubmitted?.call(text);
         widget.onEditingComplete?.call();
         break;
+      case 'updateCursor':
+        final position = call.arguments ?? 0;
+        widget.cursorPositionChanged?.call(position);
+        break;
       default:
         break;
     }
@@ -316,7 +321,7 @@ class _RichTextFieldState extends State<RichTextField> {
         : null;
     if (Platform.isIOS) {
       return SizedBox(
-        height: _height,
+        height: _height + 4,
         child: Focus(
           focusNode: widget.focusNode,
           onFocusChange: onFocusChange,
