@@ -122,7 +122,7 @@ open class GrowingTextView: UITextView {
             }
         } else if shouldScrollAfterHeightChanged {
             shouldScrollAfterHeightChanged = false
-            scrollToCorrectPosition()
+//            scrollToCorrectPosition()
         }
     }
     
@@ -172,7 +172,7 @@ open class GrowingTextView: UITextView {
 //                text = text?.trimmingCharacters(in: .whitespacesAndNewlines)
                 setNeedsDisplay()
             }
-            scrollToCorrectPosition()
+//            scrollToCorrectPosition()
         }
     }
     

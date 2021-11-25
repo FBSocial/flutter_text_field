@@ -319,9 +319,10 @@ class _RichTextFieldState extends State<RichTextField> {
             ),
           ].toSet()
         : null;
+    final height = _height > widget.maxHeight ? widget.maxHeight : _height;
     if (Platform.isIOS) {
       return SizedBox(
-        height: _height + 4,
+        height: height,
         child: Focus(
           focusNode: widget.focusNode,
           onFocusChange: onFocusChange,
@@ -339,7 +340,7 @@ class _RichTextFieldState extends State<RichTextField> {
       );
     } else if (Platform.isAndroid) {
       return SizedBox(
-        height: _height,
+        height: height,
         child: Focus(
           focusNode: widget.focusNode,
           onFocusChange: onFocusChange,
