@@ -87,8 +87,10 @@ class RichTextField: NSObject, FlutterPlatformView {
             }
             break
         case "insertText":
-            if let text = call.arguments as? String {
-                insertText(text: text)
+            if let args = call.arguments as? [String: Any] {
+                let text = (args["text"] as? String) ?? ""
+                let backSpaceLength = (args["backSpaceLength"] as? Int) ?? 0
+                insertText(text: text, backSpaceLength: backSpaceLength)
             }
             break
         case "updateFocus":

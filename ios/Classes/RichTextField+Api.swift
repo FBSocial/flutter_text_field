@@ -26,7 +26,11 @@ extension RichTextField {
 
             var location = textView.selectedRange.location
             
-            if location >= backSpaceLength && backSpaceLength > 0 {
+            
+            if backSpaceLength == -1 {
+                str.replaceCharacters(in: NSRange(location: 0, length: str.length), with: "")
+                location = 0
+            } else if location >= backSpaceLength && backSpaceLength > 0 {
                 str.replaceCharacters(in: NSRange(location: location - backSpaceLength, length: backSpaceLength), with: "")
                 location -= backSpaceLength
             }
@@ -125,11 +129,19 @@ extension RichTextField {
 
     /// 从光标位置插入指定内容
     /// - Parameter text: 内容
-    func insertText(text: String) {
+    func insertText(text: String, backSpaceLength: Int = 0) {
         editText(inputText: text) { _ in
             let str = NSMutableAttributedString(attributedString: textView.attributedText!)
 
-            let location = textView.selectedRange.location
+            var location = textView.selectedRange.location
+            
+            if backSpaceLength == -1 {
+                str.replaceCharacters(in: NSRange(location: 0, length: str.length), with: "")
+                location = 0
+            } else if location >= backSpaceLength && backSpaceLength > 0 {
+                str.replaceCharacters(in: NSRange(location: location - backSpaceLength, length: backSpaceLength), with: "")
+                location -= backSpaceLength
+            }
 
             str.insert(NSAttributedString(string: text, attributes: defaultAttributes), at: location)
 

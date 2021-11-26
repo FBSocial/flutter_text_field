@@ -95,8 +95,11 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
     _channel.setMethodCallHandler(handler);
   }
 
-  Future insertText(String text) async {
-    return wait(() => _channel.invokeMethod("insertText", text));
+  Future insertText(String text, {int backSpaceLength = 0}) async {
+    return wait(() => _channel.invokeMethod("insertText", {
+          'text': text,
+          'backSpaceLength': backSpaceLength,
+        }));
   }
 
   Future updateWidth(double width) async {
