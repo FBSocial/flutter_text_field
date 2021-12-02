@@ -195,6 +195,7 @@ class RichTextField extends StatefulWidget {
   final Function(double) cursorPositionChanged;
   final bool autoFocus;
   final bool needEagerGesture;
+  final VoidCallback scrollFromBottomTop;
 
   const RichTextField({
     @required this.controller,
@@ -214,6 +215,7 @@ class RichTextField extends StatefulWidget {
     this.onChanged,
     this.autoFocus = false,
     this.needEagerGesture = true,
+    this.scrollFromBottomTop,
   });
 
   @override
@@ -278,6 +280,9 @@ class _RichTextFieldState extends State<RichTextField> {
       case 'updateCursor':
         final position = call.arguments ?? 0;
         widget.cursorPositionChanged?.call(position);
+        break;
+      case 'hideKeyboard':
+        widget.scrollFromBottomTop?.call();
         break;
       default:
         break;

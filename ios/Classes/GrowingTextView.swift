@@ -11,6 +11,7 @@ import UIKit
 
 @objc public protocol GrowingTextViewDelegate: UITextViewDelegate {
     @objc optional func textViewDidChangeHeight(_ textView: GrowingTextView, height: CGFloat)
+    @objc optional func textViewScrollToEnd(_ textView: GrowingTextView)
 }
 
 @IBDesignable @objc
@@ -186,4 +187,32 @@ open class GrowingTextView: UITextView {
             setNeedsDisplay()
         }
     }
+    
+    
+    
+    open override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer is UIPanGestureRecognizer {
+            let velocity = (gestureRecognizer as! UIPanGestureRecognizer).velocity(in: self).y
+            let position = contentOffset.y
+            let frameHeight = frame.size.height
+            let height = contentSize.height
+            if (velocity > 0 && position <= 0) || (velocity < 0 && position + frameHeight >= height) {
+                if let delegate = delegate as? GrowingTextViewDelegate {
+                    delegate.textViewScrollToEnd?(self)
+                }
+                return false
+            }
+        }
+        return true
+    }
+    
+    open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if contentSize.height <= frame.size.height && isFirstResponder {
+            if let delegate = delegate as? GrowingTextViewDelegate {
+                delegate.textViewScrollToEnd?(self)
+            }
+        }
+    }
+    
+    
 }

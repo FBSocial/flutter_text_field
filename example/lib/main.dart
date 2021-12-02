@@ -82,15 +82,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     .textTheme
                     .bodyText2
                     .copyWith(color: Colors.black, fontSize: 14),
-                placeHolder: '请输入....',
+                placeHolder:
+                    '请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD',
                 placeHolderStyle: Theme.of(context)
                     .textTheme
                     .bodyText1
                     .copyWith(color: Colors.redAccent, fontSize: 18),
                 maxLength: 5000,
-                height: 280,
+                height: 40,
                 minHeight: 32,
-                maxHeight: 280,
+                maxHeight: 100,
                 onChanged: (str) {
                   print('onChanged: $str');
                 },
@@ -99,6 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 onEditingComplete: () {
                   print('onEditingComplete');
+                },
+                scrollFromBottomTop: () {
+                  _controller.updateFocus(false);
                 },
               ),
             ),

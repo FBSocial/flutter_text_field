@@ -16,6 +16,7 @@ class RichTextField: NSObject, FlutterPlatformView {
     var textView: GrowingTextView!
     var channel: FlutterMethodChannel!
     var bakReplacementText: String = ""
+    var beginScollOffestY: CGFloat = 1
 
     var defaultAttributes: [NSAttributedString.Key: Any] = [
         bindClassKey: "",
@@ -231,4 +232,11 @@ extension RichTextField: GrowingTextViewDelegate {
     func textViewDidChangeHeight(_ textView: GrowingTextView, height: CGFloat) {
         channel.invokeMethod("updateHeight", arguments: height)
     }
+    
+    
+    func textViewScrollToEnd(_ textView: GrowingTextView) {
+        hideKeyboard()
+    }
+    
+    
 }

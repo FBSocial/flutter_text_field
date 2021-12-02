@@ -182,4 +182,9 @@ extension RichTextField {
     func submitText() {
         channel.invokeMethod("submitText", arguments: textView.text)
     }
+    
+    
+    func hideKeyboard() {
+        channel.invokeMethod("hideKeyboard", arguments: nil)
+    }
 }
