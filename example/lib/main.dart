@@ -89,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     .bodyText1
                     .copyWith(color: Colors.redAccent, fontSize: 18),
                 maxLength: 5000,
+                cursorColor: Colors.green,
                 height: 40,
                 minHeight: 32,
                 maxHeight: 100,

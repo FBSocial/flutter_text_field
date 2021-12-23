@@ -96,7 +96,8 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future insertText(String text, {int backSpaceLength = 0}) async {
-    return wait(() => _channel.invokeMethod("insertText", {
+    return wait(() =>
+        _channel.invokeMethod("insertText", {
           'text': text,
           'backSpaceLength': backSpaceLength,
         }));
@@ -108,29 +109,32 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
 
   Future insertAtName(String name,
       {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
-    return wait(() => insertBlock('$name ',
-        data: data,
-        textStyle: textStyle,
-        prefix: '@',
-        backSpaceLength: backSpaceLength));
+    return wait(() =>
+        insertBlock('$name ',
+            data: data,
+            textStyle: textStyle,
+            prefix: '@',
+            backSpaceLength: backSpaceLength));
   }
 
   Future insertChannelName(String name,
       {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
-    return wait(() => insertBlock('$name ',
-        data: data,
-        textStyle: textStyle,
-        prefix: '#',
-        backSpaceLength: backSpaceLength));
+    return wait(() =>
+        insertBlock('$name ',
+            data: data,
+            textStyle: textStyle,
+            prefix: '#',
+            backSpaceLength: backSpaceLength));
   }
 
   Future insertBlock(String name,
       {String data = '',
-      TextStyle textStyle,
-      String prefix = '',
-      int backSpaceLength = 0}) {
+        TextStyle textStyle,
+        String prefix = '',
+        int backSpaceLength = 0}) {
     textStyle ??= _defaultRichTextStyle;
-    return wait(() => _channel.invokeMethod("insertBlock", {
+    return wait(() =>
+        _channel.invokeMethod("insertBlock", {
           'name': name,
           'data': data,
           'prefix': prefix,
@@ -148,7 +152,8 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future replace(String text, TextRange range) async {
-    return wait(() => _channel.invokeMethod("replace", {
+    return wait(() =>
+        _channel.invokeMethod("replace", {
           'text': text,
           'selection_start': range.start,
           'selection_end': range.end,
@@ -196,6 +201,8 @@ class RichTextField extends StatefulWidget {
   final bool autoFocus;
   final bool needEagerGesture;
   final VoidCallback scrollFromBottomTop;
+  final Color cursorColor;
+
 
   const RichTextField({
     @required this.controller,
@@ -216,6 +223,7 @@ class RichTextField extends StatefulWidget {
     this.autoFocus = false,
     this.needEagerGesture = true,
     this.scrollFromBottomTop,
+    this.cursorColor,
   });
 
   @override
@@ -225,11 +233,16 @@ class RichTextField extends StatefulWidget {
 class _RichTextFieldState extends State<RichTextField> {
   double _height = 40;
   bool _backFoucus;
-  int _time = DateTime.now().millisecondsSinceEpoch;
+  int _time = DateTime
+      .now()
+      .millisecondsSinceEpoch;
 
   Map createParams() {
     return {
-      'width': widget.width ?? MediaQuery.of(context).size.width,
+      'width': widget.width ?? MediaQuery
+          .of(context)
+          .size
+          .width,
       'height': widget.height,
       'maxHeight': widget.maxHeight,
       'minHeight': widget.minHeight,
@@ -246,7 +259,8 @@ class _RichTextFieldState extends State<RichTextField> {
         'height': widget.placeHolderStyle.height ?? 1.35
       },
       'maxLength': widget.maxLength,
-      'done': widget.onEditingComplete != null || widget.onSubmitted != null
+      'done': widget.onEditingComplete != null || widget.onSubmitted != null,
+      'cursorColor': (widget.cursorColor ?? Colors.black).value,
     };
   }
 
@@ -309,7 +323,9 @@ class _RichTextFieldState extends State<RichTextField> {
       return;
     }
     // 防抖处理
-    final time = DateTime.now().millisecondsSinceEpoch;
+    final time = DateTime
+        .now()
+        .millisecondsSinceEpoch;
     if (time > _time + 200) {
       _time = time;
       widget.controller.updateFocus(focus);
@@ -322,10 +338,10 @@ class _RichTextFieldState extends State<RichTextField> {
   Widget build(BuildContext context) {
     final gestureRecognizers = widget.needEagerGesture
         ? <Factory<OneSequenceGestureRecognizer>>[
-            new Factory<OneSequenceGestureRecognizer>(
-              () => new EagerGestureRecognizer(),
-            ),
-          ].toSet()
+      new Factory<OneSequenceGestureRecognizer>(
+            () => new EagerGestureRecognizer(),
+      ),
+    ].toSet()
         : null;
     final height = _height > widget.maxHeight ? widget.maxHeight : _height;
     if (Platform.isIOS) {

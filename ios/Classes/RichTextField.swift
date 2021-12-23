@@ -49,6 +49,7 @@ class RichTextField: NSObject, FlutterPlatformView {
 
         let initText = (args?["text"] as? String) ?? ""
         let textStyle = (args?["textStyle"] as? [String: Any])
+        let cursorColor = (args?["cursorColor"] as? Int) ?? 0
         let placeHolderStyle = (args?["placeHolderStyle"] as? [String: Any])
         let placeHolder = (args?["placeHolder"] as? String) ?? ""
         let maxLength = (args?["maxLength"] as? Int) ?? 5000
@@ -62,6 +63,7 @@ class RichTextField: NSObject, FlutterPlatformView {
         textView = GrowingTextView(frame: _frame)
         textView.font = .systemFont(ofSize: fontSize)
         textView.textColor = defaultAttributes[.foregroundColor] as? UIColor ?? UIColor.black
+        textView.tintColor = UIColor(color: cursorColor)
         textView.attributedText = NSMutableAttributedString(string: initText, attributes: defaultAttributes)
         textView.textContainerInset = UIEdgeInsets(top: 4, left: 5, bottom: 2, right: 0)
         textView.contentInset = UIEdgeInsets(top: 4, left: 5, bottom: 2, right: 0)
