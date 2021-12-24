@@ -57,6 +57,7 @@ class RichTextEditingValue {
 class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   MethodChannel _channel;
   TextStyle _defaultRichTextStyle;
+  String _viewId;
 
   String get text => value.text;
 
@@ -87,8 +88,10 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   void setViewId(String viewId) {
-    if (_channel != null) return;
-    _channel = MethodChannel('com.fanbook.rich_textfield_$viewId');
+    if (_channel == null || _viewId != viewId) {
+      _viewId = viewId;
+      _channel = MethodChannel('com.fanbook.rich_textfield_$viewId');
+    }
   }
 
   void setMethodCallHandler(Future<dynamic> Function(MethodCall call) handler) {
@@ -96,8 +99,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future insertText(String text, {int backSpaceLength = 0}) async {
-    return wait(() =>
-        _channel.invokeMethod("insertText", {
+    return wait(() => _channel.invokeMethod("insertText", {
           'text': text,
           'backSpaceLength': backSpaceLength,
         }));
@@ -109,32 +111,29 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
 
   Future insertAtName(String name,
       {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
-    return wait(() =>
-        insertBlock('$name ',
-            data: data,
-            textStyle: textStyle,
-            prefix: '@',
-            backSpaceLength: backSpaceLength));
+    return wait(() => insertBlock('$name ',
+        data: data,
+        textStyle: textStyle,
+        prefix: '@',
+        backSpaceLength: backSpaceLength));
   }
 
   Future insertChannelName(String name,
       {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
-    return wait(() =>
-        insertBlock('$name ',
-            data: data,
-            textStyle: textStyle,
-            prefix: '#',
-            backSpaceLength: backSpaceLength));
+    return wait(() => insertBlock('$name ',
+        data: data,
+        textStyle: textStyle,
+        prefix: '#',
+        backSpaceLength: backSpaceLength));
   }
 
   Future insertBlock(String name,
       {String data = '',
-        TextStyle textStyle,
-        String prefix = '',
-        int backSpaceLength = 0}) {
+      TextStyle textStyle,
+      String prefix = '',
+      int backSpaceLength = 0}) {
     textStyle ??= _defaultRichTextStyle;
-    return wait(() =>
-        _channel.invokeMethod("insertBlock", {
+    return wait(() => _channel.invokeMethod("insertBlock", {
           'name': name,
           'data': data,
           'prefix': prefix,
@@ -152,8 +151,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future replace(String text, TextRange range) async {
-    return wait(() =>
-        _channel.invokeMethod("replace", {
+    return wait(() => _channel.invokeMethod("replace", {
           'text': text,
           'selection_start': range.start,
           'selection_end': range.end,
