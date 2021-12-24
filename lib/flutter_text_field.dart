@@ -95,8 +95,12 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
     _channel.setMethodCallHandler(handler);
   }
 
-  Future insertText(String text) async {
-    return wait(() => _channel.invokeMethod("insertText", text));
+  Future insertText(String text, {int backSpaceLength = 0}) async {
+    return wait(() =>
+        _channel.invokeMethod("insertText", {
+          'text': text,
+          'backSpaceLength': backSpaceLength,
+        }));
   }
 
   Future updateWidth(double width) async {
@@ -105,29 +109,32 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
 
   Future insertAtName(String name,
       {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
-    return wait(() => insertBlock('$name ',
-        data: data,
-        textStyle: textStyle,
-        prefix: '@',
-        backSpaceLength: backSpaceLength));
+    return wait(() =>
+        insertBlock('$name ',
+            data: data,
+            textStyle: textStyle,
+            prefix: '@',
+            backSpaceLength: backSpaceLength));
   }
 
   Future insertChannelName(String name,
       {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
-    return wait(() => insertBlock('$name ',
-        data: data,
-        textStyle: textStyle,
-        prefix: '#',
-        backSpaceLength: backSpaceLength));
+    return wait(() =>
+        insertBlock('$name ',
+            data: data,
+            textStyle: textStyle,
+            prefix: '#',
+            backSpaceLength: backSpaceLength));
   }
 
   Future insertBlock(String name,
       {String data = '',
-      TextStyle textStyle,
-      String prefix = '',
-      int backSpaceLength = 0}) {
+        TextStyle textStyle,
+        String prefix = '',
+        int backSpaceLength = 0}) {
     textStyle ??= _defaultRichTextStyle;
-    return wait(() => _channel.invokeMethod("insertBlock", {
+    return wait(() =>
+        _channel.invokeMethod("insertBlock", {
           'name': name,
           'data': data,
           'prefix': prefix,
@@ -145,7 +152,8 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future replace(String text, TextRange range) async {
-    return wait(() => _channel.invokeMethod("replace", {
+    return wait(() =>
+        _channel.invokeMethod("replace", {
           'text': text,
           'selection_start': range.start,
           'selection_end': range.end,
@@ -189,8 +197,12 @@ class RichTextField extends StatefulWidget {
   final VoidCallback onEditingComplete;
   final Function(String) onSubmitted;
   final Function(String) onChanged;
+  final Function(double) cursorPositionChanged;
   final bool autoFocus;
   final bool needEagerGesture;
+  final VoidCallback scrollFromBottomTop;
+  final Color cursorColor;
+
 
   const RichTextField({
     @required this.controller,
@@ -206,9 +218,12 @@ class RichTextField extends StatefulWidget {
     this.minHeight = 32,
     this.onEditingComplete,
     this.onSubmitted,
+    this.cursorPositionChanged,
     this.onChanged,
     this.autoFocus = false,
     this.needEagerGesture = true,
+    this.scrollFromBottomTop,
+    this.cursorColor,
   });
 
   @override
@@ -217,10 +232,17 @@ class RichTextField extends StatefulWidget {
 
 class _RichTextFieldState extends State<RichTextField> {
   double _height = 40;
+  bool _backFoucus;
+  int _time = DateTime
+      .now()
+      .millisecondsSinceEpoch;
 
   Map createParams() {
     return {
-      'width': widget.width ?? MediaQuery.of(context).size.width,
+      'width': widget.width ?? MediaQuery
+          .of(context)
+          .size
+          .width,
       'height': widget.height,
       'maxHeight': widget.maxHeight,
       'minHeight': widget.minHeight,
@@ -237,7 +259,8 @@ class _RichTextFieldState extends State<RichTextField> {
         'height': widget.placeHolderStyle.height ?? 1.35
       },
       'maxLength': widget.maxLength,
-      'done': widget.onEditingComplete != null || widget.onSubmitted != null
+      'done': widget.onEditingComplete != null || widget.onSubmitted != null,
+      'cursorColor': (widget.cursorColor ?? Colors.black).value,
     };
   }
 
@@ -250,7 +273,7 @@ class _RichTextFieldState extends State<RichTextField> {
         break;
       case 'updateFocus':
         final focus = call.arguments ?? false;
-        print('////// focus: $focus');
+        _backFoucus = focus;
         if (focus) {
           widget.focusNode.requestFocus();
         } else {
@@ -267,6 +290,13 @@ class _RichTextFieldState extends State<RichTextField> {
         final text = call.arguments ?? '';
         widget.onSubmitted?.call(text);
         widget.onEditingComplete?.call();
+        break;
+      case 'updateCursor':
+        final position = call.arguments ?? 0;
+        widget.cursorPositionChanged?.call(position);
+        break;
+      case 'hideKeyboard':
+        widget.scrollFromBottomTop?.call();
         break;
       default:
         break;
@@ -286,23 +316,40 @@ class _RichTextFieldState extends State<RichTextField> {
     super.dispose();
   }
 
+  void onFocusChange(bool focus) {
+    // 从原生回调的foucs，不再传回原生
+    if (_backFoucus == focus) {
+      _backFoucus = null;
+      return;
+    }
+    // 防抖处理
+    final time = DateTime
+        .now()
+        .millisecondsSinceEpoch;
+    if (time > _time + 200) {
+      _time = time;
+      widget.controller.updateFocus(focus);
+    }
+    // 清理
+    if (_backFoucus != null) _backFoucus = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final gestureRecognizers = widget.needEagerGesture
         ? <Factory<OneSequenceGestureRecognizer>>[
-            new Factory<OneSequenceGestureRecognizer>(
-              () => new EagerGestureRecognizer(),
-            ),
-          ].toSet()
+      new Factory<OneSequenceGestureRecognizer>(
+            () => new EagerGestureRecognizer(),
+      ),
+    ].toSet()
         : null;
+    final height = _height > widget.maxHeight ? widget.maxHeight : _height;
     if (Platform.isIOS) {
       return SizedBox(
-        height: _height,
+        height: height,
         child: Focus(
           focusNode: widget.focusNode,
-          onFocusChange: (focus) {
-            widget.controller.updateFocus(focus);
-          },
+          onFocusChange: onFocusChange,
           child: UiKitView(
             viewType: "com.fanbook.rich_textfield",
             creationParams: createParams(),
@@ -317,12 +364,10 @@ class _RichTextFieldState extends State<RichTextField> {
       );
     } else if (Platform.isAndroid) {
       return SizedBox(
-        height: _height,
+        height: height,
         child: Focus(
           focusNode: widget.focusNode,
-          onFocusChange: (focus) {
-            widget.controller.updateFocus(focus);
-          },
+          onFocusChange: onFocusChange,
           child: PlatformViewLink(
             viewType: "com.fanbook.rich_textfield",
             surfaceFactory: (context, controller) {

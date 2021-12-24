@@ -26,7 +26,11 @@ extension RichTextField {
 
             var location = textView.selectedRange.location
             
-            if location >= backSpaceLength && backSpaceLength > 0 {
+            
+            if backSpaceLength == -1 {
+                str.replaceCharacters(in: NSRange(location: 0, length: str.length), with: "")
+                location = 0
+            } else if location >= backSpaceLength && backSpaceLength > 0 {
                 str.replaceCharacters(in: NSRange(location: location - backSpaceLength, length: backSpaceLength), with: "")
                 location -= backSpaceLength
             }
@@ -54,6 +58,10 @@ extension RichTextField {
         var frame = textView.frame
         frame.size.width = CGFloat(width)
         textView.frame = frame
+    }
+    
+    func updateCursor(poisition: CGFloat) {
+        channel.invokeMethod("updateCursor", arguments: Double(poisition))
     }
 
     /// flutter controller value 回调
@@ -121,11 +129,19 @@ extension RichTextField {
 
     /// 从光标位置插入指定内容
     /// - Parameter text: 内容
-    func insertText(text: String) {
+    func insertText(text: String, backSpaceLength: Int = 0) {
         editText(inputText: text) { _ in
             let str = NSMutableAttributedString(attributedString: textView.attributedText!)
 
-            let location = textView.selectedRange.location
+            var location = textView.selectedRange.location
+            
+            if backSpaceLength == -1 {
+                str.replaceCharacters(in: NSRange(location: 0, length: str.length), with: "")
+                location = 0
+            } else if location >= backSpaceLength && backSpaceLength > 0 {
+                str.replaceCharacters(in: NSRange(location: location - backSpaceLength, length: backSpaceLength), with: "")
+                location -= backSpaceLength
+            }
 
             str.insert(NSAttributedString(string: text, attributes: defaultAttributes), at: location)
 
@@ -165,5 +181,10 @@ extension RichTextField {
     /// 将文字回调到flutter层，处理flutter层的onDone和onSubmit等回调
     func submitText() {
         channel.invokeMethod("submitText", arguments: textView.text)
+    }
+    
+    
+    func hideKeyboard() {
+        channel.invokeMethod("hideKeyboard", arguments: nil)
     }
 }

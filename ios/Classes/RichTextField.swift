@@ -16,6 +16,7 @@ class RichTextField: NSObject, FlutterPlatformView {
     var textView: GrowingTextView!
     var channel: FlutterMethodChannel!
     var bakReplacementText: String = ""
+    var beginScollOffestY: CGFloat = 1
 
     var defaultAttributes: [NSAttributedString.Key: Any] = [
         bindClassKey: "",
@@ -48,6 +49,7 @@ class RichTextField: NSObject, FlutterPlatformView {
 
         let initText = (args?["text"] as? String) ?? ""
         let textStyle = (args?["textStyle"] as? [String: Any])
+        let cursorColor = (args?["cursorColor"] as? Int) ?? 0
         let placeHolderStyle = (args?["placeHolderStyle"] as? [String: Any])
         let placeHolder = (args?["placeHolder"] as? String) ?? ""
         let maxLength = (args?["maxLength"] as? Int) ?? 5000
@@ -61,11 +63,13 @@ class RichTextField: NSObject, FlutterPlatformView {
         textView = GrowingTextView(frame: _frame)
         textView.font = .systemFont(ofSize: fontSize)
         textView.textColor = defaultAttributes[.foregroundColor] as? UIColor ?? UIColor.black
+        textView.tintColor = UIColor(color: cursorColor)
         textView.attributedText = NSMutableAttributedString(string: initText, attributes: defaultAttributes)
         textView.textContainerInset = UIEdgeInsets(top: 4, left: 5, bottom: 2, right: 0)
         textView.contentInset = UIEdgeInsets(top: 4, left: 5, bottom: 2, right: 0)
         textView.delegate = self
         textView.backgroundColor = UIColor.clear
+        
         textView.maxHeight = maxHeight
         textView.minHeight = minHeight
         textView.attributedPlaceholder = NSAttributedString(string: placeHolder, attributes: textStyle2Attribute(textStyle: placeHolderStyle, defaultAttr: defaultAttributes))
@@ -86,8 +90,10 @@ class RichTextField: NSObject, FlutterPlatformView {
             }
             break
         case "insertText":
-            if let text = call.arguments as? String {
-                insertText(text: text)
+            if let args = call.arguments as? [String: Any] {
+                let text = (args["text"] as? String) ?? ""
+                let backSpaceLength = (args["backSpaceLength"] as? Int) ?? 0
+                insertText(text: text, backSpaceLength: backSpaceLength)
             }
             break
         case "updateFocus":
@@ -138,6 +144,11 @@ class RichTextField: NSObject, FlutterPlatformView {
 extension RichTextField: GrowingTextViewDelegate {
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         updateFocus(focus: true)
+        /// 不加延时的话，textView.selectedRange始终是指向最后的位置
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(200)) {
+            let ret = textView.caretRect(for: textView.position(from: textView.beginningOfDocument, offset: textView.selectedRange.location)!)
+            self.updateCursor(poisition: ret.origin.y)
+        }
         return true
     }
 
@@ -146,6 +157,10 @@ extension RichTextField: GrowingTextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
+        let ret = textView.caretRect(for: textView.position(from: textView.beginningOfDocument, offset: textView.selectedRange.location)!)
+        updateCursor(poisition: ret.origin.y)
+        
         if text == "\n" && textView.returnKeyType == .done {
             submitText()
             return false
@@ -219,4 +234,11 @@ extension RichTextField: GrowingTextViewDelegate {
     func textViewDidChangeHeight(_ textView: GrowingTextView, height: CGFloat) {
         channel.invokeMethod("updateHeight", arguments: height)
     }
+    
+    
+    func textViewScrollToEnd(_ textView: GrowingTextView) {
+        hideKeyboard()
+    }
+    
+    
 }
