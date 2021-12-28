@@ -12,10 +12,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class RichTextEditingValue {
-  final String text;
-  final String data;
+  final String? text;
+  final String? data;
   final TextRange selection;
-  final String inputText;
+  final String? inputText;
 
   const RichTextEditingValue({
     this.text = '',
@@ -27,10 +27,10 @@ class RichTextEditingValue {
   static const RichTextEditingValue empty = RichTextEditingValue();
 
   RichTextEditingValue copyWith({
-    String text,
-    String data,
-    String inputText,
-    TextRange selection,
+    String? text,
+    String? data,
+    String? inputText,
+    TextRange? selection,
   }) {
     return RichTextEditingValue(
       text: text ?? this.text,
@@ -40,28 +40,28 @@ class RichTextEditingValue {
     );
   }
 
-  static RichTextEditingValue fromJSON(Map encoded) {
+  static RichTextEditingValue fromJSON(Map? encoded) {
     if (encoded == null) return RichTextEditingValue.empty;
     return RichTextEditingValue(
-      text: encoded['text'] as String,
-      data: encoded['data'] as String,
+      text: encoded['text'] as String?,
+      data: encoded['data'] as String?,
       selection: TextRange(
         start: encoded['selection_start'] as int,
         end: encoded['selection_end'] as int,
       ),
-      inputText: encoded['input_text'] as String,
+      inputText: encoded['input_text'] as String?,
     );
   }
 }
 
 class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
-  MethodChannel _channel;
-  TextStyle _defaultRichTextStyle;
-  String _viewId;
+  MethodChannel? _channel;
+  TextStyle? _defaultRichTextStyle;
+  String? _viewId;
 
-  String get text => value.text;
+  String? get text => value.text;
 
-  set text(String newText) {
+  set text(String? newText) {
     setText(newText);
     value = value.copyWith(
       text: newText,
@@ -69,9 +69,9 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
     );
   }
 
-  String get data => value.data;
+  String? get data => value.data;
 
-  RichTextFieldController({TextStyle defaultRichTextStyle})
+  RichTextFieldController({TextStyle? defaultRichTextStyle})
       : super(RichTextEditingValue.empty) {
     _defaultRichTextStyle = defaultRichTextStyle ??
         TextStyle(color: Colors.lightBlueAccent, fontSize: 14, height: 1.17);
@@ -94,23 +94,23 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
     }
   }
 
-  void setMethodCallHandler(Future<dynamic> Function(MethodCall call) handler) {
-    _channel.setMethodCallHandler(handler);
+  void setMethodCallHandler(Future<dynamic> Function(MethodCall call)? handler) {
+    _channel!.setMethodCallHandler(handler);
   }
 
   Future insertText(String text, {int backSpaceLength = 0}) async {
-    return wait(() => _channel.invokeMethod("insertText", {
+    return wait(() => _channel!.invokeMethod("insertText", {
           'text': text,
           'backSpaceLength': backSpaceLength,
         }));
   }
 
   Future updateWidth(double width) async {
-    return wait(() => _channel.invokeMethod("updateWidth", width));
+    return wait(() => _channel!.invokeMethod("updateWidth", width));
   }
 
   Future insertAtName(String name,
-      {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
+      {String data = '', TextStyle? textStyle, int backSpaceLength = 0}) async {
     return wait(() => insertBlock('$name ',
         data: data,
         textStyle: textStyle,
@@ -119,7 +119,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future insertChannelName(String name,
-      {String data = '', TextStyle textStyle, int backSpaceLength = 0}) async {
+      {String data = '', TextStyle? textStyle, int backSpaceLength = 0}) async {
     return wait(() => insertBlock('$name ',
         data: data,
         textStyle: textStyle,
@@ -129,17 +129,17 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
 
   Future insertBlock(String name,
       {String data = '',
-      TextStyle textStyle,
+      TextStyle? textStyle,
       String prefix = '',
       int backSpaceLength = 0}) {
     textStyle ??= _defaultRichTextStyle;
-    return wait(() => _channel.invokeMethod("insertBlock", {
+    return wait(() => _channel!.invokeMethod("insertBlock", {
           'name': name,
           'data': data,
           'prefix': prefix,
           'backSpaceLength': backSpaceLength,
           'textStyle': {
-            'color': textStyle.color.value,
+            'color': textStyle!.color!.value,
             'fontSize': textStyle.fontSize,
             'height': textStyle.height ?? 1.17
           }
@@ -147,11 +147,11 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future updateFocus(bool focus) async {
-    return wait(() => _channel.invokeMethod("updateFocus", focus));
+    return wait(() => _channel!.invokeMethod("updateFocus", focus));
   }
 
   Future replace(String text, TextRange range) async {
-    return wait(() => _channel.invokeMethod("replace", {
+    return wait(() => _channel!.invokeMethod("replace", {
           'text': text,
           'selection_start': range.start,
           'selection_end': range.end,
@@ -159,7 +159,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future setAlpha(double alpha) async {
-    return wait(() => _channel.invokeMethod("setAlpha", alpha));
+    return wait(() => _channel!.invokeMethod("setAlpha", alpha));
   }
 
   Future replaceAll(String text) async {
@@ -170,8 +170,8 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
     return setText('');
   }
 
-  Future setText(String text) async {
-    return wait(() => _channel.invokeMethod("setText", text));
+  Future setText(String? text) async {
+    return wait(() => _channel!.invokeMethod("setText", text));
   }
 
   @override
@@ -184,27 +184,27 @@ class RichTextField extends StatefulWidget {
   final RichTextFieldController controller;
   final FocusNode focusNode;
   final String text;
-  final TextStyle textStyle;
+  final TextStyle? textStyle;
   final String placeHolder;
-  final TextStyle placeHolderStyle;
+  final TextStyle? placeHolderStyle;
   final int maxLength;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final double maxHeight;
   final double minHeight;
-  final VoidCallback onEditingComplete;
-  final Function(String) onSubmitted;
-  final Function(String) onChanged;
-  final Function(double) cursorPositionChanged;
+  final VoidCallback? onEditingComplete;
+  final Function(String)? onSubmitted;
+  final Function(String?)? onChanged;
+  final Function(double)? cursorPositionChanged;
   final bool autoFocus;
   final bool needEagerGesture;
-  final VoidCallback scrollFromBottomTop;
-  final Color cursorColor;
+  final VoidCallback? scrollFromBottomTop;
+  final Color? cursorColor;
 
 
   const RichTextField({
-    @required this.controller,
-    @required this.focusNode,
+    required this.controller,
+    required this.focusNode,
     this.text = '',
     this.textStyle,
     this.placeHolder = '',
@@ -229,8 +229,8 @@ class RichTextField extends StatefulWidget {
 }
 
 class _RichTextFieldState extends State<RichTextField> {
-  double _height = 40;
-  bool _backFoucus;
+  double? _height = 40;
+  bool? _backFoucus;
   int _time = DateTime
       .now()
       .millisecondsSinceEpoch;
@@ -246,15 +246,15 @@ class _RichTextFieldState extends State<RichTextField> {
       'minHeight': widget.minHeight,
       'text': widget.text,
       'textStyle': {
-        'color': widget.textStyle.color.value,
-        'fontSize': widget.textStyle.fontSize,
-        'height': widget.textStyle.height ?? 1.17
+        'color': widget.textStyle!.color!.value,
+        'fontSize': widget.textStyle!.fontSize,
+        'height': widget.textStyle!.height ?? 1.17
       },
       'placeHolder': widget.placeHolder,
       'placeHolderStyle': {
-        'color': widget.placeHolderStyle.color.value,
-        'fontSize': widget.placeHolderStyle.fontSize,
-        'height': widget.placeHolderStyle.height ?? 1.35
+        'color': widget.placeHolderStyle!.color!.value,
+        'fontSize': widget.placeHolderStyle!.fontSize,
+        'height': widget.placeHolderStyle!.height ?? 1.35
       },
       'maxLength': widget.maxLength,
       'done': widget.onEditingComplete != null || widget.onSubmitted != null,
@@ -279,7 +279,7 @@ class _RichTextFieldState extends State<RichTextField> {
         }
         break;
       case 'updateValue':
-        final Map temp = call.arguments;
+        final Map? temp = call.arguments;
         final value = RichTextEditingValue.fromJSON(temp);
         widget.controller.value = value;
         widget.onChanged?.call(value.text);
@@ -341,7 +341,7 @@ class _RichTextFieldState extends State<RichTextField> {
       ),
     ].toSet()
         : null;
-    final height = _height > widget.maxHeight ? widget.maxHeight : _height;
+    final height = _height! > widget.maxHeight ? widget.maxHeight : _height;
     if (Platform.isIOS) {
       return SizedBox(
         height: height,
@@ -370,8 +370,8 @@ class _RichTextFieldState extends State<RichTextField> {
             viewType: "com.fanbook.rich_textfield",
             surfaceFactory: (context, controller) {
               return AndroidViewSurface(
-                controller: controller,
-                gestureRecognizers: gestureRecognizers,
+                controller: controller as AndroidViewController,
+                gestureRecognizers: gestureRecognizers!,
                 hitTestBehavior: PlatformViewHitTestBehavior.opaque,
               );
             },
