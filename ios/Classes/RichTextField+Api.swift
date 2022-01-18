@@ -113,7 +113,7 @@ extension RichTextField {
     ///   - text: 替换的文字
     ///   - range: 区域
     func replace(text: String, range: NSRange) {
-        if range.location < 0 || range.location + range.length > textView.attributedText.string.count {
+        if range.location < 0 || range.location + range.length > textView.attributedText.string.utf16.count {
             return
         }
         editText(inputText: text, replaceLength: range.length, range: range) { needchange in
