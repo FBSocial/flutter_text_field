@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(widget.title ?? ''),
       ),
       body: Column(
         children: [
@@ -81,13 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 textStyle: Theme.of(context)
                     .textTheme
                     .bodyText2
-                    .copyWith(color: Colors.black, fontSize: 14),
+                    ?.copyWith(color: Colors.black, fontSize: 14),
                 placeHolder:
                     '请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD请输入DDD',
                 placeHolderStyle: Theme.of(context)
                     .textTheme
                     .bodyText1
-                    .copyWith(color: Colors.redAccent, fontSize: 18),
+                    ?.copyWith(color: Colors.redAccent, fontSize: 18),
                 maxLength: 5000,
                 cursorColor: Colors.green,
                 height: 40,
