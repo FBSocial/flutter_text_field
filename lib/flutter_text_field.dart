@@ -12,10 +12,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class RichTextEditingValue {
-  final String? text;
-  final String? data;
+  final String text;
+  final String data;
   final TextRange selection;
-  final String? inputText;
+  final String inputText;
 
   const RichTextEditingValue({
     this.text = '',
@@ -43,13 +43,13 @@ class RichTextEditingValue {
   static RichTextEditingValue fromJSON(Map? encoded) {
     if (encoded == null) return RichTextEditingValue.empty;
     return RichTextEditingValue(
-      text: encoded['text'] as String?,
-      data: encoded['data'] as String?,
+      text: encoded['text'],
+      data: encoded['data'],
       selection: TextRange(
         start: encoded['selection_start'] as int,
         end: encoded['selection_end'] as int,
       ),
-      inputText: encoded['input_text'] as String?,
+      inputText: encoded['input_text'],
     );
   }
 }
@@ -59,7 +59,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   TextStyle? _defaultRichTextStyle;
   String? _viewId;
 
-  String? get text => value.text;
+  String get text => value.text;
 
   set text(String? newText) {
     setText(newText);
@@ -80,7 +80,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   Future wait(Function func) async {
     for (int i = 0; i < 5; i++) {
       if (_channel != null) {
-        return func?.call();
+        return func.call();
       }
       await Future.delayed(const Duration(milliseconds: 100));
     }
@@ -94,7 +94,8 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
     }
   }
 
-  void setMethodCallHandler(Future<dynamic> Function(MethodCall call)? handler) {
+  void setMethodCallHandler(
+      Future<dynamic> Function(MethodCall call)? handler) {
     _channel!.setMethodCallHandler(handler);
   }
 
@@ -201,7 +202,6 @@ class RichTextField extends StatefulWidget {
   final VoidCallback? scrollFromBottomTop;
   final Color? cursorColor;
 
-
   const RichTextField({
     required this.controller,
     required this.focusNode,
@@ -231,16 +231,11 @@ class RichTextField extends StatefulWidget {
 class _RichTextFieldState extends State<RichTextField> {
   double? _height = 40;
   bool? _backFoucus;
-  int _time = DateTime
-      .now()
-      .millisecondsSinceEpoch;
+  int _time = DateTime.now().millisecondsSinceEpoch;
 
   Map createParams() {
     return {
-      'width': widget.width ?? MediaQuery
-          .of(context)
-          .size
-          .width,
+      'width': widget.width ?? MediaQuery.of(context).size.width,
       'height': widget.height,
       'maxHeight': widget.maxHeight,
       'minHeight': widget.minHeight,
@@ -321,9 +316,7 @@ class _RichTextFieldState extends State<RichTextField> {
       return;
     }
     // 防抖处理
-    final time = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    final time = DateTime.now().millisecondsSinceEpoch;
     if (time > _time + 200) {
       _time = time;
       widget.controller.updateFocus(focus);
@@ -336,10 +329,10 @@ class _RichTextFieldState extends State<RichTextField> {
   Widget build(BuildContext context) {
     final gestureRecognizers = widget.needEagerGesture
         ? <Factory<OneSequenceGestureRecognizer>>[
-      new Factory<OneSequenceGestureRecognizer>(
-            () => new EagerGestureRecognizer(),
-      ),
-    ].toSet()
+            new Factory<OneSequenceGestureRecognizer>(
+              () => new EagerGestureRecognizer(),
+            ),
+          ].toSet()
         : null;
     final height = _height! > widget.maxHeight ? widget.maxHeight : _height;
     if (Platform.isIOS) {
