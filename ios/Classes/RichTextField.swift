@@ -46,6 +46,15 @@ class RichTextField: NSObject, FlutterPlatformView {
         channel.setMethodCallHandler { [weak self] call, result in
             self?.handlerMethodCall(call, result)
         }
+        
+        var _textContainerInset = UIEdgeInsets.zero
+        if let textContainerInsetMap = args?["textContainerInset"] as? [String: Any],
+            let top = textContainerInsetMap["top"] as? CGFloat,
+           let left = textContainerInsetMap["left"] as? CGFloat,
+           let bottom = textContainerInsetMap["bottom"] as? CGFloat,
+           let right = textContainerInsetMap["right"] as? CGFloat {
+            _textContainerInset = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+        }
 
         let initText = (args?["text"] as? String) ?? ""
         let textStyle = (args?["textStyle"] as? [String: Any])
@@ -65,8 +74,7 @@ class RichTextField: NSObject, FlutterPlatformView {
         textView.textColor = defaultAttributes[.foregroundColor] as? UIColor ?? UIColor.black
         textView.tintColor = UIColor(color: cursorColor)
         textView.attributedText = NSMutableAttributedString(string: initText, attributes: defaultAttributes)
-        textView.textContainerInset = UIEdgeInsets(top: 4, left: 5, bottom: 2, right: 0)
-        textView.contentInset = UIEdgeInsets(top: 4, left: 5, bottom: 2, right: 0)
+        textView.textContainerInset = _textContainerInset
         textView.delegate = self
         textView.backgroundColor = UIColor.clear
         

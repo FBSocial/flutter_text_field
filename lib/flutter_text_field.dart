@@ -193,6 +193,7 @@ class RichTextField extends StatefulWidget {
   final double? height;
   final double maxHeight;
   final double minHeight;
+  final EdgeInsets textContainerInset;
   final VoidCallback? onEditingComplete;
   final Function(String)? onSubmitted;
   final Function(String?)? onChanged;
@@ -214,6 +215,7 @@ class RichTextField extends StatefulWidget {
     this.height,
     this.maxHeight = 142,
     this.minHeight = 32,
+    this.textContainerInset = const EdgeInsets.fromLTRB(10, 8, 0, 4),
     this.onEditingComplete,
     this.onSubmitted,
     this.cursorPositionChanged,
@@ -254,6 +256,13 @@ class _RichTextFieldState extends State<RichTextField> {
       'maxLength': widget.maxLength,
       'done': widget.onEditingComplete != null || widget.onSubmitted != null,
       'cursorColor': (widget.cursorColor ?? Colors.black).value,
+      if (widget.textContainerInset != null)
+        'textContainerInset': {
+          'left': widget.textContainerInset!.left,
+          'top': widget.textContainerInset!.top,
+          'right': widget.textContainerInset!.right,
+          'bottom': widget.textContainerInset!.bottom
+        }
     };
   }
 

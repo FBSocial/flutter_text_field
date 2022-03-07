@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 40,
                 minHeight: 32,
                 maxHeight: 100,
+                textContainerInset: EdgeInsets.fromLTRB(10, 10, 10, 4),
                 onChanged: (str) {
                   print('onChanged: $str');
                 },
