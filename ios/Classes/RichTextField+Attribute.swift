@@ -14,7 +14,7 @@ extension RichTextField {
     ///   - textStyle: flutter TextStyle
     ///   - defaultAttr: 默认熟悉
     /// - Returns: Swift 富文本属性
-    func textStyle2Attribute(textStyle: [String: Any]?, defaultAttr: [NSAttributedString.Key: Any]?) -> [NSAttributedString.Key: Any] {
+    func textStyle2Attribute(textStyle: [String: Any]?, defaultAttr: [NSAttributedString.Key: Any]?, placeHolderBreakWord: Bool = false) -> [NSAttributedString.Key: Any] {
         guard let textStyle = textStyle else {
             return defaultAttr ?? [:]
         }
@@ -22,15 +22,19 @@ extension RichTextField {
         let fontSize = (textStyle["fontSize"] as? Int) ?? 17
         let height = (textStyle["height"] as? CGFloat) ?? 1.25
         let textColor = UIColor(color: textColorValue)
-        
+
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = height
-        
+        if placeHolderBreakWord {
+            paragraphStyle.lineBreakMode = .byTruncatingTail
+        }
+
         return [
             bindClassKey: "",
             .font: UIFont.systemFont(ofSize: CGFloat(fontSize)),
             .foregroundColor: textColor,
             .paragraphStyle :paragraphStyle,
+
         ]
     }
     

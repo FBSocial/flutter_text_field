@@ -71,12 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
             onVerticalDragUpdate: (_) {},
             child: Container(
               decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-              width: 400,
+              height: 400,
               child: RichTextField(
                 controller: _controller,
                 focusNode: _focusNode,
-                text:
-                    'dfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdfdfdsfsdfsdgdf',
+                text: '',
 //              autoFocus: true,
                 textStyle: Theme.of(context)
                     .textTheme
@@ -87,13 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 placeHolderStyle: Theme.of(context)
                     .textTheme
                     .bodyText1
-                    ?.copyWith(color: Colors.redAccent, fontSize: 18),
+                    ?.copyWith(color: Colors.redAccent, fontSize: 14),
                 maxLength: 5000,
                 cursorColor: Colors.green,
                 height: 40,
                 minHeight: 32,
                 maxHeight: 100,
-                textContainerInset: EdgeInsets.fromLTRB(10, 10, 10, 4),
                 onChanged: (str) {
                   print('onChanged: $str');
                 },
@@ -103,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onEditingComplete: () {
                   print('onEditingComplete');
                 },
+                placeHolderBreakWord: true,
                 scrollFromBottomTop: () {
                   _controller.updateFocus(false);
                 },

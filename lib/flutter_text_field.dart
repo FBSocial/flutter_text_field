@@ -202,6 +202,7 @@ class RichTextField extends StatefulWidget {
   final bool needEagerGesture;
   final VoidCallback? scrollFromBottomTop;
   final Color? cursorColor;
+  final bool placeHolderBreakWord;
 
   const RichTextField({
     required this.controller,
@@ -223,6 +224,7 @@ class RichTextField extends StatefulWidget {
     this.autoFocus = false,
     this.needEagerGesture = true,
     this.scrollFromBottomTop,
+    this.placeHolderBreakWord = false,
     this.cursorColor,
   });
 
@@ -256,13 +258,13 @@ class _RichTextFieldState extends State<RichTextField> {
       'maxLength': widget.maxLength,
       'done': widget.onEditingComplete != null || widget.onSubmitted != null,
       'cursorColor': (widget.cursorColor ?? Colors.black).value,
-      if (widget.textContainerInset != null)
-        'textContainerInset': {
-          'left': widget.textContainerInset!.left,
-          'top': widget.textContainerInset!.top,
-          'right': widget.textContainerInset!.right,
-          'bottom': widget.textContainerInset!.bottom
-        }
+      'textContainerInset': {
+        'left': widget.textContainerInset.left,
+        'top': widget.textContainerInset.top,
+        'right': widget.textContainerInset.right,
+        'bottom': widget.textContainerInset.bottom
+      },
+      'placeHolderBreakWord': widget.placeHolderBreakWord,
     };
   }
 

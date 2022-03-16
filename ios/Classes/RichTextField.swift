@@ -67,6 +67,7 @@ class RichTextField: NSObject, FlutterPlatformView {
         let minHeight = (args?["minHeight"] as? CGFloat) ?? 32
         let maxHeight = (args?["maxHeight"] as? CGFloat) ?? 142
         let fontSize = (textStyle?["fontSize"] as? CGFloat) ?? 17
+        let placeHolderBreakWord =  (args?["placeHolderBreakWord"] as? Bool) ?? false
         defaultAttributes = textStyle2Attribute(textStyle: textStyle, defaultAttr: defaultAttributes)
 
         textView = GrowingTextView(frame: _frame)
@@ -80,7 +81,7 @@ class RichTextField: NSObject, FlutterPlatformView {
         
         textView.maxHeight = maxHeight
         textView.minHeight = minHeight
-        textView.attributedPlaceholder = NSAttributedString(string: placeHolder, attributes: textStyle2Attribute(textStyle: placeHolderStyle, defaultAttr: defaultAttributes))
+        textView.attributedPlaceholder = NSAttributedString(string: placeHolder, attributes: textStyle2Attribute(textStyle: placeHolderStyle, defaultAttr: defaultAttributes, placeHolderBreakWord: placeHolderBreakWord))
         textView.maxLength = maxLength
         if done { textView.returnKeyType = .done }
     }
