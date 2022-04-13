@@ -78,6 +78,7 @@ class RichTextField: NSObject, FlutterPlatformView {
         textView.textContainerInset = _textContainerInset
         textView.delegate = self
         textView.backgroundColor = UIColor.clear
+        textView.inputAccessoryView = UIView()
         
         textView.maxHeight = maxHeight
         textView.minHeight = minHeight
