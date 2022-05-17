@@ -309,7 +309,6 @@ class _RichTextFieldState extends State<RichTextField> {
 
   @override
   void initState() {
-    if (widget.autoFocus) widget.controller.updateFocus(true);
     if (widget.height != null) _height = widget.height;
     super.initState();
   }
@@ -359,6 +358,7 @@ class _RichTextFieldState extends State<RichTextField> {
             onPlatformViewCreated: (viewId) {
               widget.controller.setViewId('$viewId');
               widget.controller.setMethodCallHandler(_handlerCall);
+              if (widget.autoFocus) widget.controller.updateFocus(true);
             },
             gestureRecognizers: gestureRecognizers,
           ),
@@ -391,6 +391,7 @@ class _RichTextFieldState extends State<RichTextField> {
                 ..addOnPlatformViewCreatedListener((id) {
                   widget.controller.setViewId('$id');
                   widget.controller.setMethodCallHandler(_handlerCall);
+                  if (widget.autoFocus) widget.controller.updateFocus(true);
                 })
                 ..create();
             },
