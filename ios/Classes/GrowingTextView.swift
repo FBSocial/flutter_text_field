@@ -208,7 +208,7 @@ open class GrowingTextView: UITextView {
     
     open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if contentSize.height <= frame.size.height && isFirstResponder {
-            if let delegate = delegate as? GrowingTextViewDelegate {
+            if let delegate = delegate as? GrowingTextViewDelegate, selectedRange.length == 0  {
                 delegate.textViewScrollToEnd?(self)
             }
         }
