@@ -96,18 +96,18 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
 
   void setMethodCallHandler(
       Future<dynamic> Function(MethodCall call)? handler) {
-    _channel!.setMethodCallHandler(handler);
+    _channel?.setMethodCallHandler(handler);
   }
 
   Future insertText(String text, {int backSpaceLength = 0}) async {
-    return wait(() => _channel!.invokeMethod("insertText", {
+    return wait(() => _channel?.invokeMethod("insertText", {
           'text': text,
           'backSpaceLength': backSpaceLength,
         }));
   }
 
   Future updateWidth(double width) async {
-    return wait(() => _channel!.invokeMethod("updateWidth", width));
+    return wait(() => _channel?.invokeMethod("updateWidth", width));
   }
 
   Future insertAtName(String name,
@@ -134,7 +134,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
       String prefix = '',
       int backSpaceLength = 0}) {
     textStyle ??= _defaultRichTextStyle;
-    return wait(() => _channel!.invokeMethod("insertBlock", {
+    return wait(() => _channel?.invokeMethod("insertBlock", {
           'name': name,
           'data': data,
           'prefix': prefix,
@@ -148,11 +148,11 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future updateFocus(bool focus) async {
-    return wait(() => _channel!.invokeMethod("updateFocus", focus));
+    return wait(() => _channel?.invokeMethod("updateFocus", focus));
   }
 
   Future replace(String text, TextRange range) async {
-    return wait(() => _channel!.invokeMethod("replace", {
+    return wait(() => _channel?.invokeMethod("replace", {
           'text': text,
           'selection_start': range.start,
           'selection_end': range.end,
@@ -172,7 +172,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future setText(String? text) async {
-    return wait(() => _channel!.invokeMethod("setText", text));
+    return wait(() => _channel?.invokeMethod("setText", text));
   }
 
   @override
