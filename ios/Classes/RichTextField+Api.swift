@@ -44,7 +44,7 @@ extension RichTextField {
 
             textView.attributedText = str
 
-            textView.selectedRange = NSMakeRange(location + attrStr.length, 0)
+            textView.selectedRange = NSMakeRange(location + attrStr.string.utf16.count, 0)
         }
     }
 
@@ -123,7 +123,7 @@ extension RichTextField {
             let str = NSMutableAttributedString(attributedString: textView.attributedText!)
             str.replaceCharacters(in: range, with: text)
             textView.attributedText = str
-            textView.selectedRange = NSRange(location: range.location + text.count, length: 0)
+            textView.selectedRange = NSRange(location: range.location + text.utf16.count, length: 0)
         }
     }
 
@@ -147,7 +147,7 @@ extension RichTextField {
 
             textView.attributedText = str
 
-            textView.selectedRange = NSMakeRange(location + text.count, 0)
+            textView.selectedRange = NSMakeRange(location + text.utf16.count, 0)
         }
     }
 
