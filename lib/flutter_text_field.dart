@@ -69,7 +69,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
     );
   }
 
-  String? get data => value.data;
+  String get data => value.data;
 
   RichTextFieldController({TextStyle? defaultRichTextStyle})
       : super(RichTextEditingValue.empty) {
