@@ -128,6 +128,11 @@ class RichTextField: NSObject, FlutterPlatformView {
                 setText(text: text)
             }
             break
+        case "setPlaceholder":
+            if let text = call.arguments as? String {
+                textView.placeholder = text;
+            }
+            break
         case "setAlpha":
 
             if let alpha = call.arguments as? CGFloat {
