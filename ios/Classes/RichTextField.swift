@@ -17,6 +17,10 @@ class RichTextField: NSObject, FlutterPlatformView {
     var channel: FlutterMethodChannel!
     var bakReplacementText: String = ""
     var beginScollOffestY: CGFloat = 1
+    
+    var pHStyle: [String: Any]?;
+    
+    var pHBreakWord: Bool?;
 
     var defaultAttributes: [NSAttributedString.Key: Any] = [
         bindClassKey: "",
@@ -84,6 +88,8 @@ class RichTextField: NSObject, FlutterPlatformView {
         textView.minHeight = minHeight
         textView.attributedPlaceholder = NSAttributedString(string: placeHolder, attributes: textStyle2Attribute(textStyle: placeHolderStyle, defaultAttr: defaultAttributes, placeHolderBreakWord: placeHolderBreakWord))
         textView.maxLength = maxLength
+        pHStyle = placeHolderStyle;
+        pHBreakWord = placeHolderBreakWord;
         if done { textView.returnKeyType = .done }
     }
 
@@ -130,7 +136,7 @@ class RichTextField: NSObject, FlutterPlatformView {
             break
         case "setPlaceholder":
             if let text = call.arguments as? String {
-                textView.placeholder = text;
+                textView.attributedPlaceholder = NSAttributedString(string: text, attributes: textStyle2Attribute(textStyle: pHStyle, defaultAttr: defaultAttributes, placeHolderBreakWord: pHBreakWord ?? false))
             }
             break
         case "setAlpha":
