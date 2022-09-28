@@ -207,6 +207,7 @@ class RichTextField extends StatefulWidget {
   final VoidCallback? scrollFromBottomTop;
   final Color? cursorColor;
   final bool placeHolderBreakWord;
+  final bool useHybridComposition;
 
   const RichTextField({
     required this.controller,
@@ -229,6 +230,7 @@ class RichTextField extends StatefulWidget {
     this.needEagerGesture = true,
     this.scrollFromBottomTop,
     this.placeHolderBreakWord = false,
+    this.useHybridComposition = true,
     this.cursorColor,
   });
 
@@ -374,36 +376,46 @@ class _RichTextFieldState extends State<RichTextField> {
         child: Focus(
           focusNode: widget.focusNode,
           onFocusChange: onFocusChange,
-          child: PlatformViewLink(
-            viewType: "com.fanbook.rich_textfield",
-            surfaceFactory: (context, controller) {
-              return AndroidViewSurface(
-                controller: controller as AndroidViewController,
-                gestureRecognizers: gestureRecognizers!,
-                hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-              );
-            },
-            onCreatePlatformView: (params) {
-              params.onPlatformViewCreated(params.id);
-              return PlatformViewsService.initSurfaceAndroidView(
-                id: params.id,
-                viewType: "com.fanbook.rich_textfield",
-                layoutDirection: TextDirection.ltr,
-                creationParams: createParams(),
-                creationParamsCodec: const StandardMessageCodec(),
-              )
-                ..addOnPlatformViewCreatedListener((id) {
-                  widget.controller.setViewId('$id');
-                  widget.controller.setMethodCallHandler(_handlerCall);
-                  if (widget.autoFocus) widget.controller.updateFocus(true);
-                })
-                ..create();
-            },
-          ),
+          child: widget.useHybridComposition
+              ? PlatformViewLink(
+                  viewType: "com.fanbook.rich_textfield",
+                  surfaceFactory: (context, controller) {
+                    return AndroidViewSurface(
+                      controller: controller as AndroidViewController,
+                      gestureRecognizers: gestureRecognizers!,
+                      hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+                    );
+                  },
+                  onCreatePlatformView: (params) {
+                    params.onPlatformViewCreated(params.id);
+                    return PlatformViewsService.initSurfaceAndroidView(
+                      id: params.id,
+                      viewType: "com.fanbook.rich_textfield",
+                      layoutDirection: TextDirection.ltr,
+                      creationParams: createParams(),
+                      creationParamsCodec: const StandardMessageCodec(),
+                    )
+                      ..addOnPlatformViewCreatedListener(_onPlatformViewCreated)
+                      ..create();
+                  },
+                )
+              : AndroidView(
+                  viewType: 'com.fanbook.rich_textfield',
+                  layoutDirection: TextDirection.ltr,
+                  creationParams: createParams(),
+                  creationParamsCodec: const StandardMessageCodec(),
+                  onPlatformViewCreated: _onPlatformViewCreated,
+                ),
         ),
       );
     } else {
       return Text('暂不支持该平台');
     }
+  }
+
+  void _onPlatformViewCreated(int id) {
+    widget.controller.setViewId('$id');
+    widget.controller.setMethodCallHandler(_handlerCall);
+    if (widget.autoFocus) widget.controller.updateFocus(true);
   }
 }
