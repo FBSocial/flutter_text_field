@@ -88,7 +88,7 @@ class RichTextFieldController extends ValueNotifier<RichTextEditingValue> {
   }
 
   Future setPlaceholder(String placeholder) {
-    return wait(() => _channel?.invokeMethod("setPlaceholder", text));
+    return wait(() => _channel?.invokeMethod("setPlaceholder", placeholder));
   }
 
   void setViewId(String viewId) {
